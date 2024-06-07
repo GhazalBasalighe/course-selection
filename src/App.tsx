@@ -1,7 +1,8 @@
 import "./App.css";
+import Header from "./components/Header/Header";
 
 function App() {
-  return <div>سلام و درود غزل باسلیقه هستم</div>;
+  return <Header />;
 }
 
 export default App;
