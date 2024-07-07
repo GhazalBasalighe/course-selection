@@ -10,6 +10,14 @@
 body,
 html
 {
-  direction: rtl !important;
-  font-family: "Vazirmatn", "Roboto" !important;
+  direction: ltr !important;
+  font-family: "Roboto", "Vazirmatn" !important;
+}
+
+@layer base
+{
+  .header-btn
+  {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-700 hover:scale-105 ease-in-out duration-300
+  }
 }
