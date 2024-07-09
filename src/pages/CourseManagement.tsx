@@ -4,14 +4,6 @@ import { Button } from "@mui/material";
 import Header from "../components/Header/Header";
 import AddCourseModal from "../components/AddCourseModal/AddCourseModal";
 
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "professor", headerName: "Professor", width: 130 },
-  { field: "time", headerName: "Time", type: "number", width: 130 },
-  { field: "day", headerName: "Day", width: 90 },
-  { field: "courseName", headerName: "Course Name", width: 160 },
-];
-
 const initialRows = [
   {
     id: 1,
@@ -20,62 +12,7 @@ const initialRows = [
     time: 10,
     courseName: "Math 101",
   },
-  {
-    id: 2,
-    professor: "Lannister",
-    day: "Tuesday",
-    time: 11,
-    courseName: "History 201",
-  },
-  {
-    id: 3,
-    professor: "Stark",
-    day: "Wednesday",
-    time: 12,
-    courseName: "Biology 301",
-  },
-  {
-    id: 4,
-    professor: "Targaryen",
-    day: "Thursday",
-    time: 9,
-    courseName: "Chemistry 101",
-  },
-  {
-    id: 5,
-    professor: "Melisandre",
-    day: "Friday",
-    time: 13,
-    courseName: "Physics 201",
-  },
-  {
-    id: 6,
-    professor: "Clifford",
-    day: "Monday",
-    time: 14,
-    courseName: "Literature 301",
-  },
-  {
-    id: 7,
-    professor: "Frances",
-    day: "Tuesday",
-    time: 15,
-    courseName: "Philosophy 101",
-  },
-  {
-    id: 8,
-    professor: "Roxie",
-    day: "Wednesday",
-    time: 16,
-    courseName: "Computer Science 201",
-  },
-  {
-    id: 9,
-    professor: "Tyrell",
-    day: "Thursday",
-    time: 8,
-    courseName: "Art History 301",
-  },
+  // ... other initial rows
 ];
 
 function CourseManagement() {
@@ -95,6 +32,36 @@ function CourseManagement() {
     setRows([...rows, newRow]);
     handleClose();
   };
+
+  const handleDelete = (id: any) => {
+    const updatedRows = rows.filter((row) => row.id !== id);
+    setRows(updatedRows);
+  };
+
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID" },
+    { field: "professor", headerName: "Professor", width: 200 },
+    {
+      field: "time",
+      headerName: "Time",
+    },
+    { field: "day", headerName: "Day" },
+    { field: "courseName", headerName: "Course Name", width: 150 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          onClick={() => handleDelete(params.row.id)}
+        >
+          Delete
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -120,12 +87,8 @@ function CourseManagement() {
           <DataGrid
             rows={rows}
             columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
-            }}
-            pageSizeOptions={[5, 10]}
+            //@ts-ignore
+            pageSize={5}
             checkboxSelection
           />
         </div>

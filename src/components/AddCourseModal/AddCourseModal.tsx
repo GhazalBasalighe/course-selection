@@ -1,4 +1,15 @@
-import { Modal, Box, TextField, Typography, Button } from "@mui/material";
+import { Add } from "@mui/icons-material";
+import {
+  Modal,
+  Box,
+  Typography,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { Formik, Form } from "formik";
 import { SetStateAction } from "react";
 import * as Yup from "yup";
@@ -18,11 +29,19 @@ const style = {
 const validationSchema = Yup.object({
   professor: Yup.string().required("Professor is required"),
   day: Yup.string().required("Day is required"),
-  time: Yup.number()
-    .required("Time is required")
-    .positive("Time must be positive"),
+  time: Yup.string().required("Time is required"),
   courseName: Yup.string().required("Course Name is required"),
 });
+
+const weekdays = [
+  { label: "Monday", value: "Monday" },
+  { label: "Tuesday", value: "Tuesday" },
+  { label: "Wednesday", value: "Wednesday" },
+  { label: "Thursday", value: "Thursday" },
+  { label: "Friday", value: "Friday" },
+  { label: "Saturday", value: "Saturday" },
+  { label: "Sunday", value: "Sunday" },
+];
 
 const AddCourseModal = ({
   open,
@@ -43,6 +62,7 @@ const AddCourseModal = ({
       <Box sx={style}>
         <Typography id="modal-title" variant="h6" component="h2">
           Add New Course
+          <Add />
         </Typography>
         <Formik
           initialValues={{
@@ -68,22 +88,33 @@ const AddCourseModal = ({
                 error={touched.professor && Boolean(errors.professor)}
                 helperText={touched.professor && errors.professor}
               />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Day"
-                name="day"
-                value={values.day}
-                onChange={handleChange}
-                error={touched.day && Boolean(errors.day)}
-                helperText={touched.day && errors.day}
-              />
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="day-label">Day</InputLabel>
+                <Select
+                  labelId="day-label"
+                  id="day"
+                  label="day"
+                  name="day"
+                  value={values.day}
+                  onChange={handleChange}
+                  error={touched.day && Boolean(errors.day)}
+                >
+                  <MenuItem value="">
+                    <em>Select Day</em>
+                  </MenuItem>
+                  {weekdays.map((day) => (
+                    <MenuItem key={day.value} value={day.value}>
+                      {day.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 fullWidth
                 margin="normal"
                 label="Time"
                 name="time"
-                type="number"
+                type="time"
                 value={values.time}
                 onChange={handleChange}
                 error={touched.time && Boolean(errors.time)}
