@@ -1,3 +1,4 @@
+import { Check } from "@mui/icons-material";
 import {
   Modal,
   Box,
@@ -130,9 +131,10 @@ const AddCourseModal = ({
               />
               <Button
                 variant="contained"
-                color="primary"
+                color="success"
                 type="submit"
                 style={{ marginTop: "16px" }}
+                endIcon={<Check />}
               >
                 Add Course
               </Button>
