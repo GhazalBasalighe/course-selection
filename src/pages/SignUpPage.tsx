@@ -1,66 +1,17 @@
-import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { IconButton, TextField, styled } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
+import CustomizedTextInput from "../components/CustomizedTextInput/CustomizedTextInput";
+import CustomizedButton from "../components/CustomizedButton/CustomizedButton";
 
 function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: "#A0AAB4",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#B2BAC2",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-        borderRadius: "2rem",
-        borderWidth: "2px",
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-        borderRadius: "2rem",
-        borderWidth: "2px",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "white",
-      },
-    },
-  });
-
-  const CssButton = styled(Button)({
-    backgroundColor: "white",
-    color: "black",
-    padding: "0.8rem 0",
-    borderRadius: "2rem",
-    textTransform: "none",
-    fontWeight: "700",
-    fontSize: "1rem",
-    lineHeight: "2rem",
-    border: "none",
-    outline: "none",
-    width: "98%",
-    textAlign: "center",
-    "&:hover": {
-      backgroundColor: "#f4f4f4",
-      boxShadow: "none",
-    },
-    "&:active": {
-      boxShadow: "none",
-      backgroundColor: "#f4f4f4",
-    },
-    "&:focus": {
-      boxShadow: "0 0 0 0.2rem rgba(147, 150, 154, 0.5)",
-    },
-  });
-
   return (
-    <div className="flex h-screen items-center justify-center bg-[url('../../public/login-bg.png')]">
+    <div className="flex h-screen items-center justify-center bg-[url('login-bg.png')]">
       <div className="relative max-w-md w-full bg-white/20 p-8 rounded-xl backdrop-blur-md bg-opacity-10 h-[35rem]">
         <h1 className="text-3xl font-bold text-center text-white mb-6">
           Sign Up
@@ -84,7 +35,7 @@ function SignUpPage() {
           {({ values, touched, errors, handleChange, handleBlur }) => (
             <Form className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
-                <CssTextField
+                <CustomizedTextInput
                   id="email"
                   name="email"
                   label="Email ID"
@@ -107,7 +58,7 @@ function SignUpPage() {
                     style: { color: "white", padding: "0 0.5rem" },
                   }}
                 />
-                <CssTextField
+                <CustomizedTextInput
                   name="password"
                   label="Password"
                   variant="outlined"
@@ -139,7 +90,7 @@ function SignUpPage() {
                     style: { color: "white", padding: "0 0.5rem" },
                   }}
                 />
-                <CssTextField
+                <CustomizedTextInput
                   name="confirmPassword"
                   label="Confirm Password"
                   variant="outlined"
@@ -176,7 +127,7 @@ function SignUpPage() {
                   }}
                 />
               </div>
-              <CssButton
+              <CustomizedButton
                 className="self-center"
                 variant="contained"
                 type="submit"
@@ -187,7 +138,7 @@ function SignUpPage() {
                 }
               >
                 Sign Up
-              </CssButton>
+              </CustomizedButton>
               <div className="text-center text-white mt-4">
                 Already have an account?{" "}
                 <Link to="/" className="underline">

@@ -8,7 +8,7 @@ export default {
         muli: ["Muli", "sans-serif"],
       },
       backgroundImage: {
-        "404bg": "url('../../public/404bg.jpg')",
+        "404bg": "url('../../404bg.jpg')",
       },
       colors: {
         "custom-black": "#222225",
