@@ -1,4 +1,3 @@
-import { Add } from "@mui/icons-material";
 import {
   Modal,
   Box,
@@ -62,7 +61,6 @@ const AddCourseModal = ({
       <Box sx={style}>
         <Typography id="modal-title" variant="h6" component="h2">
           Add New Course
-          <Add />
         </Typography>
         <Formik
           initialValues={{

@@ -3,6 +3,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import Header from "../components/Header/Header";
 import AddCourseModal from "../components/AddCourseModal/AddCourseModal";
+import { Add } from "@mui/icons-material";
 
 const initialRows = [
   {
@@ -72,6 +73,7 @@ function CourseManagement() {
           color="secondary"
           onClick={handleOpen}
           style={{ marginBottom: "20px" }}
+          endIcon={<Add />}
         >
           Add New Course
         </Button>
