@@ -1,3 +1,4 @@
+import { ExitToApp } from "@mui/icons-material";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 
@@ -23,24 +24,18 @@ const Header = () => {
             </Typography>
           </div>
         </NavLink>
-        {/* Search and Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-6 items-center">
+          <span className="text-lg text-slate-300">
+            Hello {"Ghazal"} !
+          </span>
           <Link to="/">
-            <Button
-              variant="contained"
-              color="info"
-              className="header-btn"
-            >
-              Login
-            </Button>
-          </Link>
-          <Link to="/sign-up">
             <Button
               variant="outlined"
               color="inherit"
               className="header-btn"
+              endIcon={<ExitToApp />}
             >
-              Sign Up
+              Log Out
             </Button>
           </Link>
         </div>
