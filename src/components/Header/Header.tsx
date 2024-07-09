@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -10,7 +10,7 @@ const Header = () => {
           <div className="flex items-center gap-3">
             <img
               className="h-auto w-14 bg-white rounded-full"
-              src="uniLogo.png"
+              src="/uniLogo.png"
               alt="University Logo"
             />
             <Typography
@@ -25,16 +25,24 @@ const Header = () => {
         </NavLink>
         {/* Search and Actions */}
         <div className="flex gap-2">
-          <Button variant="contained" color="info" className="header-btn">
-            Login
-          </Button>
-          <Button
-            variant="outlined"
-            color="inherit"
-            className="header-btn"
-          >
-            Sign Up
-          </Button>
+          <Link to="/">
+            <Button
+              variant="contained"
+              color="info"
+              className="header-btn"
+            >
+              Login
+            </Button>
+          </Link>
+          <Link to="/sign-up">
+            <Button
+              variant="outlined"
+              color="inherit"
+              className="header-btn"
+            >
+              Sign Up
+            </Button>
+          </Link>
         </div>
       </Toolbar>
     </AppBar>

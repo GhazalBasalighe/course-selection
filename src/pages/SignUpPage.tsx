@@ -11,7 +11,7 @@ function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex h-screen items-center justify-center bg-[url('login-bg.png')]">
+    <div className="flex h-screen items-center justify-center bg-[url('/login-bg.png')]">
       <div className="relative max-w-md w-full bg-white/20 p-8 rounded-xl backdrop-blur-md bg-opacity-10 h-[35rem]">
         <h1 className="text-3xl font-bold text-center text-white mb-6">
           Sign Up
