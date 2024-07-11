@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { IconButton } from "@mui/material";
@@ -6,10 +6,38 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import CustomizedButton from "../components/CustomizedButton/CustomizedButton";
 import CustomizedTextInput from "../components/CustomizedTextInput/CustomizedTextInput";
+import axios from "axios";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
+  const handleLogin = async (values: {
+    email: string;
+    password: string;
+  }) => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:5000/api/auth/login",
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
+      console.log(response.data.role);
+      const userData = response.data.token;
+      localStorage.setItem("user", JSON.stringify(userData));
+      if (response.data.role === "admin") {
+        navigate("/admin");
+      } else if (response.data.role === "student") {
+        navigate("/courses");
+      }
+    } catch (error: any) {
+      console.error(
+        "Error signing up:",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
   return (
     <div className="flex h-screen items-center justify-center bg-[url('/login-bg.png')]">
       <div className="relative max-w-md w-full bg-white/20 p-8 rounded-xl backdrop-blur-md bg-opacity-10 h-[30rem]">
@@ -23,10 +51,10 @@ const LoginPage = () => {
               .email("Invalid email format")
               .required("Required"),
             password: Yup.string()
-              .min(6, "Password must be at least 6 characters")
+              .min(4, "Password must be at least 4 characters")
               .required("Required"),
           })}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={handleLogin}
         >
           {({ values, touched, errors, handleChange }) => (
             <Form className="flex flex-col gap-5">
