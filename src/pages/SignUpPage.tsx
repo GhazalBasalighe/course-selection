@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { IconButton } from "@mui/material";
@@ -6,9 +6,34 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import CustomizedTextInput from "../components/CustomizedTextInput/CustomizedTextInput";
 import CustomizedButton from "../components/CustomizedButton/CustomizedButton";
+import axios from "axios";
 
 function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const handleSignUp = async (values: {
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:5000/api/auth/signup",
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
+      const userData = response.data.token;
+      localStorage.setItem("user", JSON.stringify(userData));
+      navigate("/courses");
+    } catch (error: any) {
+      console.error(
+        "Error signing up:",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
 
   return (
     <div className="flex h-screen items-center justify-center bg-[url('/login-bg.png')]">
@@ -30,7 +55,7 @@ function SignUpPage() {
               .oneOf([Yup.ref("password"), null], "Passwords must match")
               .required("Required"),
           })}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={handleSignUp}
         >
           {({ values, touched, errors, handleChange, handleBlur }) => (
             <Form className="flex flex-col gap-5">
