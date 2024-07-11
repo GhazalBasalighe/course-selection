@@ -24,8 +24,8 @@ function SignUpPage() {
           password: values.password,
         }
       );
-      const userData = response.data.token;
-      localStorage.setItem("user", JSON.stringify(userData));
+      const token = response.data.token;
+      localStorage.setItem("token", token);
       navigate("/courses");
     } catch (error: any) {
       console.error(

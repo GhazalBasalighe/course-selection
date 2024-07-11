@@ -24,6 +24,8 @@ const style = {
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
+  maxHeight: "90vh",
+  overflowY: "scroll",
 };
 
 const validationSchema = Yup.object({
@@ -31,6 +33,7 @@ const validationSchema = Yup.object({
   day: Yup.string().required("Day is required"),
   time: Yup.string().required("Time is required"),
   courseName: Yup.string().required("Course Name is required"),
+  courseCredit: Yup.string().required("Course Credit is required"),
 });
 
 const weekdays = [
@@ -65,10 +68,12 @@ const AddCourseModal = ({
         </Typography>
         <Formik
           initialValues={{
+            courseName: "",
             professor: "",
+            courseCredit: "",
             day: "",
             time: "",
-            courseName: "",
+            description: "",
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
@@ -80,12 +85,34 @@ const AddCourseModal = ({
               <TextField
                 fullWidth
                 margin="normal"
+                label="Course Name"
+                name="courseName"
+                value={values.courseName}
+                onChange={handleChange}
+                error={touched.courseName && Boolean(errors.courseName)}
+                helperText={touched.courseName && errors.courseName}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
                 label="Professor"
                 name="professor"
                 value={values.professor}
                 onChange={handleChange}
                 error={touched.professor && Boolean(errors.professor)}
                 helperText={touched.professor && errors.professor}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Course Credit"
+                name="courseCredit"
+                value={values.courseCredit}
+                onChange={handleChange}
+                error={
+                  touched.courseCredit && Boolean(errors.courseCredit)
+                }
+                helperText={touched.courseCredit && errors.courseCredit}
               />
               <FormControl fullWidth margin="normal">
                 <InputLabel id="day-label">Day</InputLabel>
@@ -121,13 +148,14 @@ const AddCourseModal = ({
               />
               <TextField
                 fullWidth
+                multiline
                 margin="normal"
-                label="Course Name"
-                name="courseName"
-                value={values.courseName}
+                label="Description"
+                name="description"
+                value={values.description}
                 onChange={handleChange}
-                error={touched.courseName && Boolean(errors.courseName)}
-                helperText={touched.courseName && errors.courseName}
+                error={touched.description && Boolean(errors.description)}
+                helperText={touched.description && errors.description}
               />
               <Button
                 variant="contained"

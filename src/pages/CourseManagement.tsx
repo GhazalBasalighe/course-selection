@@ -1,53 +1,115 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import Header from "../components/Header/Header";
 import AddCourseModal from "../components/AddCourseModal/AddCourseModal";
 import { Add } from "@mui/icons-material";
-
-const initialRows = [
-  {
-    id: 1,
-    professor: "Snow",
-    day: "Monday",
-    time: 10,
-    courseName: "Math 101",
-  },
-  // ... other initial rows
-];
+import axios from "axios";
 
 function CourseManagement() {
-  const [rows, setRows] = useState(initialRows);
+  const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = (values: any) => {
-    const newId = rows.length ? rows[rows.length - 1].id + 1 : 1;
-    const newRow = {
-      id: newId,
-      ...values,
-      time: Number(values.time),
-    };
-    setRows([...rows, newRow]);
-    handleClose();
+  const getLessons = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        "http://127.0.0.1:5000/api/lessons",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const lessons = response.data.map((lesson: any) => ({
+        id: lesson._id,
+        professor: lesson.teacher,
+        day: lesson.schedule.days.join(", "),
+        time: lesson.schedule.hour,
+        courseName: lesson.name,
+        courseCredit: lesson.courseCredit,
+      }));
+      setRows(lessons);
+    } catch (error: any) {
+      console.error(
+        "Error Getting Lessons:",
+        error.response?.data?.message || error.message
+      );
+    }
   };
 
-  const handleDelete = (id: any) => {
-    const updatedRows = rows.filter((row) => row.id !== id);
-    setRows(updatedRows);
+  useEffect(() => {
+    getLessons();
+  }, []);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://127.0.0.1:5000/api/lessons",
+        {
+          name: values.courseName,
+          teacher: values.professor,
+          description: values.description,
+          courseCredit: values.courseCredit,
+          schedule: {
+            days: values.days,
+            hour: values.time,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const newRow = {
+        id: response.data.lesson._id,
+        professor: response.data.lesson.teacher,
+        day: response.data.lesson.schedule.days.join(", "),
+        time: response.data.lesson.schedule.hour,
+        courseName: response.data.lesson.name,
+      };
+      //@ts-ignore
+      setRows((prevRows) => [...prevRows, newRow]);
+      handleClose();
+    } catch (error: any) {
+      console.error(
+        "Error Adding Lesson:",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
+  const handleDelete = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      //@ts-ignore
+      await axios.delete(`http://127.0.0.1:5000/api/lessons/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //@ts-ignore
+      const updatedRows = rows.filter((row) => row.id !== id);
+      setRows(updatedRows);
+    } catch (error: any) {
+      console.error(
+        "Error Deleting Lesson:",
+        error.response?.data?.message || error.message
+      );
+    }
   };
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID" },
-    { field: "professor", headerName: "Professor", width: 200 },
-    {
-      field: "time",
-      headerName: "Time",
-    },
-    { field: "day", headerName: "Day" },
+    { field: "id", headerName: "ID", width: 280 },
     { field: "courseName", headerName: "Course Name", width: 150 },
+    { field: "courseCredit", headerName: "Course Credit", width: 150 },
+    { field: "professor", headerName: "Professor", width: 200 },
+    { field: "time", headerName: "Time", width: 200 },
+    { field: "day", headerName: "Day", width: 200 },
     {
       field: "actions",
       headerName: "Actions",

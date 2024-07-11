@@ -24,8 +24,8 @@ const LoginPage = () => {
         }
       );
       console.log(response.data.role);
-      const userData = response.data.token;
-      localStorage.setItem("user", JSON.stringify(userData));
+      const token = response.data.token;
+      localStorage.setItem("token", token);
       if (response.data.role === "admin") {
         navigate("/admin");
       } else if (response.data.role === "student") {
