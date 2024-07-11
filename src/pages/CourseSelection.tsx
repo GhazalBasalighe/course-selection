@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -6,125 +6,158 @@ import {
 } from "@mui/x-data-grid";
 import { Button, Box, Typography } from "@mui/material";
 import Header from "../components/Header/Header";
+import axios from "axios";
 
 interface Course {
-  id: number;
-  professor: string;
-  day: string;
-  time: number;
-  courseName: string;
+  schedule: {
+    days: string[];
+    hour: string;
+  };
+  id: string;
+  name: string;
+  teacher: string;
+  description: string;
+  courseCredit: number;
+  __v: number;
 }
-const initialCourses = [
-  {
-    id: 1,
-    professor: "Snow",
-    day: "Monday",
-    time: 10,
-    courseName: "Math 101",
-  },
-  {
-    id: 2,
-    professor: "Lannister",
-    day: "Tuesday",
-    time: 11,
-    courseName: "History 201",
-  },
-  {
-    id: 3,
-    professor: "Stark",
-    day: "Wednesday",
-    time: 12,
-    courseName: "Biology 301",
-  },
-  {
-    id: 4,
-    professor: "Targaryen",
-    day: "Thursday",
-    time: 9,
-    courseName: "Chemistry 101",
-  },
-  {
-    id: 5,
-    professor: "Melisandre",
-    day: "Friday",
-    time: 13,
-    courseName: "Physics 201",
-  },
-  {
-    id: 6,
-    professor: "Clifford",
-    day: "Monday",
-    time: 14,
-    courseName: "Literature 301",
-  },
-  {
-    id: 7,
-    professor: "Frances",
-    day: "Tuesday",
-    time: 15,
-    courseName: "Philosophy 101",
-  },
-  {
-    id: 8,
-    professor: "Roxie",
-    day: "Wednesday",
-    time: 16,
-    courseName: "Computer Science 201",
-  },
-  {
-    id: 9,
-    professor: "Tyrell",
-    day: "Thursday",
-    time: 8,
-    courseName: "Art History 301",
-  },
-];
 
 function CourseSelection() {
-  const [availableCourses, setAvailableCourses] =
-    useState<Course[]>(initialCourses);
+  const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
   const [selectionModel, setSelectionModel] =
     useState<GridRowSelectionModel>([]);
-  const handleAddCourses = () => {
-    const coursesToAdd = availableCourses.filter((course) =>
-      selectionModel.includes(course.id)
-    );
-    setAvailableCourses(
-      availableCourses.filter(
-        (course) => !selectionModel.includes(course.id)
-      )
-    );
-    setSelectedCourses([...selectedCourses, ...coursesToAdd]);
-    setSelectionModel([]);
+
+  useEffect(() => {
+    const getLessons = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://127.0.0.1:5000/api/lessons",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const res = await axios.get(
+          "http://127.0.0.1:5000/api/students/lessons",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const formattedCourses = response.data.map((lesson: any) => ({
+          id: lesson._id,
+          courseName: lesson.name,
+          courseCredit: lesson.courseCredit,
+          professor: lesson.teacher,
+          time: lesson.schedule.hour,
+          day: lesson.schedule.days.join(", "),
+        }));
+        const formattedSelectedCourses = res.data.map((lesson: any) => ({
+          id: lesson._id,
+          courseName: lesson.name,
+          courseCredit: lesson.courseCredit,
+          professor: lesson.teacher,
+          time: lesson.schedule.hour,
+          day: lesson.schedule.days.join(", "),
+        }));
+        setAvailableCourses(formattedCourses);
+        setSelectedCourses(formattedSelectedCourses);
+      } catch (error: any) {
+        console.error(
+          "Error Getting Lessons:",
+          error.response?.data?.message || error.message
+        );
+      }
+    };
+
+    getLessons();
+  }, []);
+
+  const handleAddCourses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      for (const id of selectionModel) {
+        const courseToAdd = availableCourses.find(
+          (course) => course.id === id
+        );
+        console.log(courseToAdd);
+        if (!courseToAdd) {
+          console.error(
+            `Course with ID ${id} not found in availableCourses`
+          );
+          continue;
+        }
+
+        await axios.post(
+          "http://127.0.0.1:5000/api/students/lessons",
+          { lessonId: courseToAdd.id },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setSelectedCourses((prevCourses) => [...prevCourses, courseToAdd]);
+        setSelectionModel((prevSelection) =>
+          prevSelection.filter((selectedId) => selectedId !== id)
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Error adding courses:",
+        //@ts-ignore
+        error.response?.data?.message || error.message
+      );
+    }
   };
 
-  const handleRemoveCourse = (id: number) => {
-    const courseToRemove = selectedCourses.find(
-      (course) => course.id === id
-    );
-    if (courseToRemove) {
-      setSelectedCourses(
-        selectedCourses.filter((course) => course.id !== id)
+  const handleRemoveCourse = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete("http://127.0.0.1:5000/api/students/lessons", {
+        data: { lessonId: id },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const removedCourse = selectedCourses.find(
+        (course) => course.id === id
       );
-      setAvailableCourses([...availableCourses, courseToRemove]);
+      if (removedCourse) {
+        setSelectedCourses((prevCourses) =>
+          prevCourses.filter((course) => course.id !== id)
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Error removing course:",
+        //@ts-ignore
+        error.response?.data?.message || error.message
+      );
     }
   };
 
   const availableColumns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "professor", headerName: "Professor", width: 130 },
-    { field: "time", headerName: "Time", type: "number", width: 130 },
-    { field: "day", headerName: "Day", width: 90 },
-    { field: "courseName", headerName: "Course Name", width: 160 },
+    { field: "id", headerName: "ID", width: 280 },
+    { field: "courseName", headerName: "Course Name", width: 150 },
+    { field: "courseCredit", headerName: "Course Credit", width: 150 },
+    { field: "professor", headerName: "Professor", width: 200 },
+    { field: "time", headerName: "Time", width: 200 },
+    { field: "day", headerName: "Day", width: 150 },
   ];
 
   const selectedColumns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "professor", headerName: "Professor", width: 130 },
-    { field: "time", headerName: "Time", type: "number", width: 130 },
-    { field: "day", headerName: "Day", width: 90 },
-    { field: "courseName", headerName: "Course Name", width: 160 },
+    { field: "id", headerName: "ID", width: 280 },
+    { field: "courseName", headerName: "Course Name", width: 150 },
+    { field: "courseCredit", headerName: "Course Credit", width: 150 },
+    { field: "professor", headerName: "Professor", width: 200 },
+    { field: "time", headerName: "Time", width: 200 },
+    { field: "day", headerName: "Day", width: 150 },
     {
       field: "actions",
       headerName: "Actions",
@@ -150,13 +183,14 @@ function CourseSelection() {
           marginTop: "80px",
           padding: "20px",
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          alignItems: "center",
           gap: "20px",
         }}
       >
         <Box
           sx={{
-            width: "45%",
+            width: "90%",
             padding: "20px",
             backgroundColor: "#f5f5f5",
             borderRadius: "8px",
@@ -172,7 +206,7 @@ function CourseSelection() {
             pageSize={5}
             checkboxSelection
             autoHeight
-            onSelectionModelChange={(newSelectionModel: any): any => {
+            onRowSelectionModelChange={(newSelectionModel: any): any => {
               setSelectionModel(newSelectionModel);
             }}
             selectionModel={selectionModel}
@@ -191,12 +225,12 @@ function CourseSelection() {
             onClick={handleAddCourses}
             disabled={selectionModel.length === 0}
           >
-            Add &gt;&gt;
+            Add
           </Button>
         </Box>
         <Box
           sx={{
-            width: "45%",
+            width: "90%",
             padding: "20px",
             backgroundColor: "#f5f5f5",
             borderRadius: "8px",
