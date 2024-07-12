@@ -22,15 +22,21 @@ interface Course {
 }
 
 function CourseSelection() {
+  // State to store the list of available courses
   const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
+  // State to store the list of selected courses
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
+  // State to manage the selection model in the DataGrid
   const [selectionModel, setSelectionModel] =
     useState<GridRowSelectionModel>([]);
 
   useEffect(() => {
+    // Function to fetch lessons data from the API
     const getLessons = async () => {
       try {
         const token = localStorage.getItem("token");
+
+        // Fetching available lessons
         const response = await axios.get(
           "http://127.0.0.1:5000/api/lessons",
           {
@@ -39,6 +45,8 @@ function CourseSelection() {
             },
           }
         );
+
+        // Fetching selected lessons for the student
         const res = await axios.get(
           "http://127.0.0.1:5000/api/students/lessons",
           {
@@ -47,6 +55,8 @@ function CourseSelection() {
             },
           }
         );
+
+        // Formatting the data to be used in the DataGrid
         const formattedCourses = response.data.map((lesson: any) => ({
           id: lesson._id,
           courseName: lesson.name,
@@ -55,6 +65,7 @@ function CourseSelection() {
           time: lesson.schedule.hour,
           day: lesson.schedule.days.join(", "),
         }));
+
         const formattedSelectedCourses = res.data.map((lesson: any) => ({
           id: lesson._id,
           courseName: lesson.name,
@@ -63,6 +74,8 @@ function CourseSelection() {
           time: lesson.schedule.hour,
           day: lesson.schedule.days.join(", "),
         }));
+
+        // Updating the state with fetched lessons
         setAvailableCourses(formattedCourses);
         setSelectedCourses(formattedSelectedCourses);
       } catch (error: any) {
@@ -73,9 +86,11 @@ function CourseSelection() {
       }
     };
 
+    // Fetching lessons when the component mounts
     getLessons();
   }, []);
 
+  // Function to handle adding selected courses
   const handleAddCourses = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -84,7 +99,7 @@ function CourseSelection() {
         const courseToAdd = availableCourses.find(
           (course) => course.id === id
         );
-        console.log(courseToAdd);
+
         if (!courseToAdd) {
           console.error(
             `Course with ID ${id} not found in availableCourses`
@@ -92,6 +107,7 @@ function CourseSelection() {
           continue;
         }
 
+        // Adding the selected course for the student
         await axios.post(
           "http://127.0.0.1:5000/api/students/lessons",
           { lessonId: courseToAdd.id },
@@ -101,6 +117,8 @@ function CourseSelection() {
             },
           }
         );
+
+        // Updating the selected courses and clearing the selection model
         setSelectedCourses((prevCourses) => [...prevCourses, courseToAdd]);
         setSelectionModel((prevSelection) =>
           prevSelection.filter((selectedId) => selectedId !== id)
@@ -115,9 +133,12 @@ function CourseSelection() {
     }
   };
 
+  // Function to handle removing a selected course
   const handleRemoveCourse = async (id: string) => {
     try {
       const token = localStorage.getItem("token");
+
+      // Removing the selected course for the student
       await axios.delete("http://127.0.0.1:5000/api/students/lessons", {
         data: { lessonId: id },
         headers: {
@@ -125,6 +146,7 @@ function CourseSelection() {
         },
       });
 
+      // Updating the state to remove the course from selected courses
       const removedCourse = selectedCourses.find(
         (course) => course.id === id
       );
@@ -142,6 +164,7 @@ function CourseSelection() {
     }
   };
 
+  // Columns definition for the available courses DataGrid
   const availableColumns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 280 },
     { field: "courseName", headerName: "Course Name", width: 150 },
@@ -151,6 +174,7 @@ function CourseSelection() {
     { field: "day", headerName: "Day", width: 150 },
   ];
 
+  // Columns definition for the selected courses DataGrid
   const selectedColumns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 280 },
     { field: "courseName", headerName: "Course Name", width: 150 },
@@ -174,7 +198,6 @@ function CourseSelection() {
       ),
     },
   ];
-
   return (
     <div>
       <Header />

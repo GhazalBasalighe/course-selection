@@ -7,12 +7,17 @@ import { Add } from "@mui/icons-material";
 import axios from "axios";
 
 function CourseManagement() {
+  // State to store the lessons data
   const [rows, setRows] = useState([]);
+  // State to control the modal visibility
   const [open, setOpen] = useState(false);
 
+  // Function to open the modal
   const handleOpen = () => setOpen(true);
+  // Function to close the modal
   const handleClose = () => setOpen(false);
 
+  // Function to fetch lessons data from the API
   const getLessons = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -24,6 +29,8 @@ function CourseManagement() {
           },
         }
       );
+
+      // Mapping the API response to the format needed by the DataGrid
       const lessons = response.data.map((lesson: any) => ({
         id: lesson._id,
         professor: lesson.teacher,
@@ -32,6 +39,8 @@ function CourseManagement() {
         courseName: lesson.name,
         courseCredit: lesson.courseCredit,
       }));
+
+      // Updating the state with the fetched lessons
       setRows(lessons);
     } catch (error: any) {
       console.error(
@@ -41,10 +50,12 @@ function CourseManagement() {
     }
   };
 
+  // Fetching the lessons data when the component mounts
   useEffect(() => {
     getLessons();
   }, []);
 
+  // Function to handle the form submission for adding a new lesson
   const handleSubmit = async (values: any) => {
     try {
       const token = localStorage.getItem("token");
@@ -66,15 +77,21 @@ function CourseManagement() {
           },
         }
       );
+
+      // Creating a new row with the response data
       const newRow = {
         id: response.data.lesson._id,
         professor: response.data.lesson.teacher,
         day: response.data.lesson.schedule.days.join(", "),
         time: response.data.lesson.schedule.hour,
         courseName: response.data.lesson.name,
+        courseCredit: response.data.lesson.courseCredit,
       };
+
+      // Adding the new row to the existing rows
       //@ts-ignore
       setRows((prevRows) => [...prevRows, newRow]);
+      // Closing the modal after submission
       handleClose();
     } catch (error: any) {
       console.error(
@@ -83,6 +100,8 @@ function CourseManagement() {
       );
     }
   };
+
+  // Function to handle the deletion of a lesson
   const handleDelete = async (id: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -92,6 +111,8 @@ function CourseManagement() {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      // Updating the rows state to remove the deleted lesson
       //@ts-ignore
       const updatedRows = rows.filter((row) => row.id !== id);
       setRows(updatedRows);
@@ -103,6 +124,7 @@ function CourseManagement() {
     }
   };
 
+  // Defining the columns for the DataGrid
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 280 },
     { field: "courseName", headerName: "Course Name", width: 150 },

@@ -9,8 +9,10 @@ import CustomizedTextInput from "../components/CustomizedTextInput/CustomizedTex
 import axios from "axios";
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const navigate = useNavigate(); // Hook for navigation
+
+  // Function to handle login form submission
   const handleLogin = async (values: {
     email: string;
     password: string;
@@ -25,7 +27,9 @@ const LoginPage = () => {
       );
       console.log(response.data.role);
       const token = response.data.token;
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token); // Storing the token in local storage
+
+      // Navigating to different routes based on the user role
       if (response.data.role === "admin") {
         navigate("/admin");
       } else if (response.data.role === "student") {
@@ -38,6 +42,7 @@ const LoginPage = () => {
       );
     }
   };
+
   return (
     <div className="flex h-screen items-center justify-center bg-[url('/login-bg.png')]">
       <div className="relative max-w-md w-full bg-white/20 p-8 rounded-xl backdrop-blur-md bg-opacity-10 h-[30rem]">

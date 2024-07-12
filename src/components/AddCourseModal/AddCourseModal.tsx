@@ -14,6 +14,7 @@ import { Formik, Form } from "formik";
 import { SetStateAction } from "react";
 import * as Yup from "yup";
 
+// Style object for the modal
 const style = {
   position: "absolute",
   top: "50%",
@@ -28,6 +29,7 @@ const style = {
   overflowY: "scroll",
 };
 
+// Validation schema for the form
 const validationSchema = Yup.object({
   professor: Yup.string().required("Professor is required"),
   day: Yup.string().required("Day is required"),
@@ -36,6 +38,7 @@ const validationSchema = Yup.object({
   courseCredit: Yup.string().required("Course Credit is required"),
 });
 
+// List of weekdays for the dropdown
 const weekdays = [
   { label: "Monday", value: "Monday" },
   { label: "Tuesday", value: "Tuesday" },
@@ -46,6 +49,7 @@ const weekdays = [
   { label: "Sunday", value: "Sunday" },
 ];
 
+// Component for the Add Course Modal
 const AddCourseModal = ({
   open,
   handleClose,

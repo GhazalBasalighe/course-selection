@@ -9,8 +9,10 @@ import CustomizedButton from "../components/CustomizedButton/CustomizedButton";
 import axios from "axios";
 
 function SignUpPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const navigate = useNavigate(); // Hook for navigation
+
+  // Function to handle sign-up form submission
   const handleSignUp = async (values: {
     email: string;
     password: string;
@@ -25,8 +27,8 @@ function SignUpPage() {
         }
       );
       const token = response.data.token;
-      localStorage.setItem("token", token);
-      navigate("/courses");
+      localStorage.setItem("token", token); // Storing the token in local storage
+      navigate("/courses"); // Navigating to the courses page after successful sign-up
     } catch (error: any) {
       console.error(
         "Error signing up:",
